@@ -1,5 +1,5 @@
 * {
-  padding: 0;
+  /* padding: 0; */
   margin: 0;
   box-sizing: border-box;
 }
@@ -22,7 +22,7 @@ body {
   width: 100%;
   height: auto;
   margin: 0 auto;
-  padding: 40px 0 40px 40px;
+  padding: 30px;
   min-height: 500px;
   max-width: 300px;
   min-width: 250px;
@@ -67,22 +67,30 @@ body {
   outline: none !important;
 }
 
+.delete-icon {
+  fill: mediumturquoise;
+  width: 1em;
+  display: inline-block;
+  font-size: 1.3rem;
+  transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  flex-shrink: 0;
+  user-select: none;
+}
+
 button {
-  padding: 0;
+  padding: 0.5rem 1rem;
   margin: 5px;
-  border: none;
+  border-radius: 5px;
   font-family: "Architects Daughter", cursive;
   text-decoration: none;
   padding-bottom: 3px;
   border-radius: 5px;
-  background-color: #ffeaa7;
-}
-button span {
   background: #f1f5f8;
-  display: block;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
   border: 2px solid hsl(198, 1%, 29%);
+}
+button:disabled {
+  border: 2px solid rgb(207, 203, 203);
+  color: hsl(0, 0%, 55%);
 }
 
 li {

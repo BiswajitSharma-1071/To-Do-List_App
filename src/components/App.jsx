@@ -1,30 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import ListItem from "./ListItem";
 import InputText from "./InputText";
 import Footer from "./Footer";
+import { v4 } from "uuid";
+import _ from "lodash";
+import PropTypes from "prop-types";
 
-function App() {
+const App = () => {
   const [items, setItems] = useState([]);
   const [deletedItem, setDeletedItem] = useState([]);
   const [err, setErr] = useState("");
 
-  function addItem(inputText) {
+  const addItem = (inputText) => {
     if (inputText.trim() !== "") {
       setItems((prevItems) => {
-        return [...prevItems, inputText.trim()];
+        return [...prevItems, { id: v4(), inputText: inputText.trim() }];
       });
-    } else {
-      alert(`Enter something in the input box to Add to the list
-(Note: Input cannot consist of only white spaces.)`);
+      setErr("");
     }
-  }
+  };
 
-  function deleteItem(id) {
+  const deleteItem = (id) => {
     setDeletedItem([
       ...deletedItem,
       {
         index: id,
-        txt: items[id],
+        item: items[id],
       },
     ]);
 
@@ -34,73 +35,89 @@ function App() {
       });
     });
     // console.log('After del: ' + items)
-  }
+  };
 
-  function rollbackItem() {
+  const rollbackItem = () => {
     if (deletedItem.length) {
-      let deleItems = deletedItem;
-      let delItems = deleItems.pop();
-      let ind = delItems.index;
-      let textData = delItems.txt;
-      let newItems = [...items];
+      let deleItems = _.cloneDeep(deletedItem);
+      let itemToBeAdded = deleItems.pop();
+      let ind = itemToBeAdded.index;
+      let data = itemToBeAdded.item;
+      let newItems = _.cloneDeep(items);
 
-      newItems.splice(ind, 0, textData);
-      // console.log(deletedItem)
-      // console.log('After Rollback: ' + newItems)
+      newItems.splice(ind, 0, data);
       setItems([...newItems]);
       setDeletedItem(deleItems);
-      setErr("");
-    } else setErr("No items to Undo");
-  }
+    }
+  };
 
-  function clearList() {
+  const clearList = () => {
     if (
       items.length &&
       window.confirm(
         "This action will delete all the items in the list. \n Do you wish to continue ?"
       )
     ) {
-      if (items.length) {
-        setItems([]);
-      } else {
-        setErr("No Items in the List");
-      }
-    } else {
-      setErr("No Items to clear");
+      setItems([]);
+      setDeletedItem([]);
     }
-  }
+  };
 
   return (
-    <div>
+    <Fragment>
       <div className="container">
         <div className="heading">
           <h1>To-Do List</h1>
         </div>
-        <InputText dataItem={addItem} />
-        <div>
+        <InputText dataItem={addItem} setErr={setErr} />
+        {err && (
+          <div
+            style={{
+              fontFamily: "Open Sans",
+              fontSize: "0.7rem",
+              position: "relative",
+              color: "red",
+            }}
+          >
+            {err}
+          </div>
+        )}
+        <div
+          style={{ overflowY: "auto", height: "250px", marginBottom: "15px" }}
+        >
           <ul>
             {items.map((todoItem, index) => (
               <ListItem
-                key={index}
+                key={todoItem.id}
                 id={index}
                 data={todoItem}
-                onDoubleClick={deleteItem}
+                deleteItem={deleteItem}
               />
             ))}
           </ul>
         </div>
-        <button onClick={rollbackItem} onMouseOut={() => setErr("")}>
-          <span>Undo</span>
-        </button>
-        <span></span>
-        <button onClick={clearList} onMouseOut={() => setErr("")}>
-          <span>Clear List</span>
-        </button>
-        {err && <div style={{ color: "red" }}>{err}</div>}
+        {err.trim() === "" && (
+          <div>
+            <button
+              style={{ float: "left" }}
+              onClick={rollbackItem}
+              disabled={deletedItem.length === 0}
+            >
+              Undo
+            </button>
+            <button
+              style={{ float: "right" }}
+              onClick={clearList}
+              disabled={items.length === 0}
+            >
+              Clear List
+            </button>
+          </div>
+        )}
       </div>
       <Footer />
-    </div>
+    </Fragment>
   );
-}
+};
 
 export default App;
