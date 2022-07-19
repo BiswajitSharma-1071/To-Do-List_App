@@ -4,7 +4,6 @@ import InputText from "./InputText";
 import Footer from "./Footer";
 import { v4 } from "uuid";
 import _ from "lodash";
-import PropTypes from "prop-types";
 
 const App = () => {
   const [items, setItems] = useState([]);
